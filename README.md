@@ -1,0 +1,1 @@
+A script that shows the twitch.tv chat in notifications
