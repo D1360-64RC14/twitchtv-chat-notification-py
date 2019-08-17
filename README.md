@@ -1,1 +1,1 @@
-A script that shows the twitch.tv chat in notifications
+A python script that shows the twitch.tv chat as system notification
