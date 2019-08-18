@@ -1,10 +1,9 @@
-import socket
-import re
+from socket import socket as socket, error as socketError, timeout as socketTimeout
 
 HOST = 'irc.twitch.tv'
 PORT = 6667
 TWITCH = 'D1360_64RC14'
-PASS = open('./.oauth', 'r').read() # Pega o token de autenticação de um arquivo ".oauth"
+PASS = open('./.oauthToken', 'r').read() # OAuth Token (por padrão, lê do arquivo ".oauthToken")
 CHANNEL = '#' + TWITCH.lower()
 
 class Send(object):
@@ -15,30 +14,39 @@ class Send(object):
     def channel(self, CHANNEL):
         connect.send((bytes(f'JOIN {CHANNEL}\r\n', 'UTF-8')))
 
-connect = socket.socket()
+connect = socket()
 connect.connect((HOST, PORT))
 
 Send.oauth(Send(), PASS)
 Send.nickname(Send(), TWITCH)
 Send.channel(Send(), CHANNEL)
 
+ignore = True
+
 while True:
     try:
-        data = connect.recv(2048).decode()
-        
-        if f':tmi.twitch.tv 001 d1360_64rc14 :Welcome, GLHF!' in data:
-            print(f'Connected on {TWITCH}!')
-        elif f':{TWITCH.lower()}.tmi.twitch.tv 366 {TWITCH.lower()} #{TWITCH.lower()} :End of /NAMES list' in data or f'JOIN #{TWITCH.lower()}' in data:
-            pass
-        elif 'PRIVMSG' in data:
-            channel = re.search('#\w*', data)[0]
-            username = re.search(':\w*!', data)[0][1:-1]
-            message = re.search('#\w*.*', data)[0][len(CHANNEL)+2:]
-            print(f'{channel} | {username}: {message}')
-        # else:
-        #     print(data)
-        
-    except socket.error:
+        if ignore:
+            ignore = False
+        else:
+            data = connect.recv(2048).decode()
+
+            # print(f'"{data}"') # Debug
+            if 'JOIN' in data[:data.find(CHANNEL)]:
+                print(f'Connected on {TWITCH}!')
+            elif '366' in data[:data.find(CHANNEL)]:
+                pass
+            elif 'PRIVMSG' in data:
+                channel = CHANNEL
+                username = data[1:data.find('!')]
+                message = data[data.find(CHANNEL):][len(CHANNEL)+2:-2]
+                print(f'[{channel}] {username}: {message}')
+
+            # else:
+            #     print(f'"{data}"')
+
+    except socketError:
         print('Socket Error')
-    except socket.timeout:
+        break
+    except socketTimeout:
         print('Socket Timeout')
+        break
