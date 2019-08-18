@@ -1,5 +1,20 @@
 from socket import socket as socket, error as socketError, timeout as socketTimeout
-from win10toast import ToastNotifier
+from os import sys
+
+if 'win' in sys.platform:
+    from win10toast import ToastNotifier
+    def notifier(message, username):
+        ToastNotifier._show_toast(ToastNotifier(), username, message, None, 3)
+
+elif 'linux' in sys.platform:
+    import notify2
+    notify2.init('Twitch.tv Chat')
+    def notifier(message, username):
+        notify2.Notification(username, message)
+
+else:
+    print(f'Sistema operacional não compatível :( ({sys.platform})')
+    exit(1)
 
 HOST = 'irc.twitch.tv'
 PORT = 6667
@@ -35,7 +50,7 @@ while True:
                 message = data[data.find(CHANNEL):][len(CHANNEL)+2:-2]
                 print(f'[{channel}] {username}: {message}')
                 message = message if len(message) < 136 else message[:126] + ' (More...)'
-                ToastNotifier._show_toast(ToastNotifier(), username, message, None, 3)
+                notifier(message, username)
 
             # else:
             #     print(f'"{data}"')
