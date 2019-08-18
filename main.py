@@ -1,4 +1,5 @@
 from socket import socket as socket, error as socketError, timeout as socketTimeout
+from win10toast import ToastNotifier
 
 HOST = 'irc.twitch.tv'
 PORT = 6667
@@ -25,6 +26,7 @@ while True:
             # print(f'"{data}"') # Debug
             if 'JOIN' in data[:data.find(CHANNEL)]:
                 print(f'Connected on {TWITCH}!')
+                ToastNotifier._show_toast(ToastNotifier(), 'TwitchTv Notify', 'Connected on ' + TWITCH, None, 3)
             elif '366' in data[:data.find(CHANNEL)]:
                 pass
             elif 'PRIVMSG' in data:
@@ -32,6 +34,8 @@ while True:
                 username = data[1:data.find('!')]
                 message = data[data.find(CHANNEL):][len(CHANNEL)+2:-2]
                 print(f'[{channel}] {username}: {message}')
+                message = message if len(message) < 136 else message[:126] + ' (More...)'
+                ToastNotifier._show_toast(ToastNotifier(), username, message, None, 3)
 
             # else:
             #     print(f'"{data}"')
