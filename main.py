@@ -3,7 +3,7 @@ from win10toast import ToastNotifier
 
 HOST = 'irc.twitch.tv'
 PORT = 6667
-TWITCH = 'D1360_64RC14'
+TWITCH = 'D1360_64RC14' # Twitch.tv channel
 PASS = open('./.oauthToken', 'r').read() # OAuth Token (por padrão, lê do arquivo ".oauthToken")
 CHANNEL = '#' + TWITCH.lower()
 
