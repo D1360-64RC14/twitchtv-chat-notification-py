@@ -6,20 +6,12 @@ TWITCH = 'D1360_64RC14'
 PASS = open('./.oauthToken', 'r').read() # OAuth Token (por padrão, lê do arquivo ".oauthToken")
 CHANNEL = '#' + TWITCH.lower()
 
-class Send(object):
-    def oauth(self, PASS):
-        connect.send((bytes(f'PASS {PASS}\r\n', 'UTF-8')))
-    def nickname(self, NICK):
-        connect.send((bytes(f'NICK {TWITCH}\r\n', 'UTF-8')))
-    def channel(self, CHANNEL):
-        connect.send((bytes(f'JOIN {CHANNEL}\r\n', 'UTF-8')))
-
 connect = socket()
 connect.connect((HOST, PORT))
 
-Send.oauth(Send(), PASS)
-Send.nickname(Send(), TWITCH)
-Send.channel(Send(), CHANNEL)
+connect.send((bytes(f'PASS {PASS}\r\n', 'UTF-8')))
+connect.send((bytes(f'NICK {TWITCH}\r\n', 'UTF-8')))
+connect.send((bytes(f'JOIN {CHANNEL}\r\n', 'UTF-8')))
 
 ignore = True
 
