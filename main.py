@@ -4,7 +4,7 @@ from os import sys
 if 'win' in sys.platform:
     from win10toast import ToastNotifier
     def notifier(message, username):
-        ToastNotifier._show_toast(ToastNotifier(), username, message, None, 3)
+        ToastNotifier._show_toast(ToastNotifier(), username, message, None, 4)
 
 elif 'linux' in sys.platform:
     import notify2
@@ -41,7 +41,7 @@ while True:
             # print(f'"{data}"') # Debug
             if 'JOIN' in data[:data.find(CHANNEL)]:
                 print(f'Connected on {TWITCH}!')
-                ToastNotifier._show_toast(ToastNotifier(), 'TwitchTv Notify', 'Connected on ' + TWITCH, None, 3)
+                notifier('TwitchTv Notify', 'Connected on ' + TWITCH)
             elif '366' in data[:data.find(CHANNEL)]:
                 pass
             elif 'PRIVMSG' in data:
